@@ -21,7 +21,7 @@ int GArr[10];
 
 int **DoubleGPtr;
 
-void escape_through_argument_aliasing(int *k) {
+void escape_through_ptr_argument_aliasing(int *k) {
 	int *p = k;
 }
 
@@ -342,8 +342,8 @@ void no_escape_memcpy() {
 //===----------------------------------------------------------------------===//
 // Escape of nested structures
 //===----------------------------------------------------------------------===//
-/*
 
+/*
 typedef struct {
 	int *Ptr;
 } InnerStructTy;
@@ -360,7 +360,7 @@ void escape_nested_struct() {
 	OuterStructTy OuterS = { InnerS };
 	GS = &OuterS; // Escape due to nested structure
 }
-*/
+ */
 
 /*
 
