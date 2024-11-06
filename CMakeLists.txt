@@ -31,15 +31,14 @@ target_compile_options(EscapeAnalysisTest PRIVATE -O0 -S -emit-llvm
         )
 
 # Run Escape Analysis Printer
-#COMMAND /home/ap/dev/llvm-project/llvm/build/bin/opt
 add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
         COMMAND ${OPT_EXECUTABLE}
                 -passes=mem2reg
                 -S EscapeAnalysisTest.ll
                 -o EscapeAnalysisTest_mem2reg.ll
         COMMAND  ${OPT_EXECUTABLE}
-                -stats
                 -S -passes='print<escape-analysis>'
+                -debug-only=ea
                 EscapeAnalysisTest_mem2reg.ll -disable-output
                 -debug-only=escape-analysis
         DEPENDS EscapeAnalysisTest.ll
@@ -49,13 +48,13 @@ add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
 # Run Escape Analysis Printer
 add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
         COMMAND ${CLANG_EXECUTABLE}
-        -mllvm -stats
         -S -emit-llvm -fsanitize=thread
         -mllvm -tsan-use-escape-analysis
-        -mllvm -debug-only=tsan,tsan-ea
         ../main.c
         -o EscapeAnalysisTest_TSan_instr.ll
         COMMENT "Running TSan"
 )
 
 #-S -passes=mem2reg EscapeAnalysisTest.ll
+#-mllvm -stats
+#-mllvm -debug-only=tsan,tsan-ea

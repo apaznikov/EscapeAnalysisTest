@@ -17,13 +17,80 @@ void *Ptr;
 
 #define N 10
 
+int GV;
 int GArr[N];
 int **DoubleGPtr;
+
+//===----------------------------------------------------------------------===//
+// PHIs
+//===----------------------------------------------------------------------===//
+
+void func(int **ptr);
+
+/*
+void nested_phi() {
+	int x, y, z;
+	int *p = malloc(sizeof(int)), *q = &z;
+	func(&q);
+	int *pqAlias = NULL;
+
+	if (rand()) {
+		if (rand()) {
+			p = &x;
+		} else {
+			p = &y;
+		}
+
+		pqAlias = p;
+	} else {
+		pqAlias = q;
+	}
+	int *pqAliasAlias = pqAlias;
+	func(&pqAliasAlias);		// to supress pAlias propagation
+}
+*/
+
+/*
+void aliasing_phi() {
+	int x, y;
+	int *p;
+	int *pAlias = NULL;
+
+	if (GV) {
+		p = &x;
+	} else {
+		p = &y;
+	}
+
+	// p = phi(x, y)
+
+	// Phi seems to be a pointee in this aliasing
+	// but real pointees are x and y
+	pAlias = p;
+
+	func(&pAlias);		// to supress pAlias propagation
+	GPtr = pAlias;
+}
+*/
+
+void escaping_phi() {
+	int x, y;
+	int *p;
+
+	if (rand()) {
+		p = &x;
+	} else {
+		p = &y;
+	}
+
+	GPtr = p;
+}
 
 //===----------------------------------------------------------------------===//
 // Using global arrays, ConstExpr GEPs
 //===----------------------------------------------------------------------===//
 
+/*
 char GStr[] = "abracadabra";
 int *PtrArr[N];
 
@@ -32,6 +99,7 @@ void escape_through_const_expr_GEP() {
 	int x;
 	PtrArr[5] = &x;		// escape
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // Escape through external "already escaping" objects
