@@ -2,12 +2,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-// ======= DEFINITIONS =======
+// ================== DEFINITIONS ==================
 
-// Global variable to demonstrate escape
+// Global pointer to demonstrate escape through assignment to global pointer
 int* GPtr;
-
-int GV;
 
 // Structure to demonstrate field escape
 typedef struct {
@@ -17,10 +15,29 @@ typedef struct {
 typedef struct { int Field1, Field2; } StructWithoutPointers;
 void *Ptr;
 
-int GArr[10];
+#define N 10
 
+int GArr[N];
 int **DoubleGPtr;
 
+//===----------------------------------------------------------------------===//
+// Using global arrays, ConstExpr GEPs
+//===----------------------------------------------------------------------===//
+
+char GStr[] = "abracadabra";
+int *PtrArr[N];
+
+void escape_through_const_expr_GEP() {
+	GStr[3] = 'z';		// no escape
+	int x;
+	PtrArr[5] = &x;		// escape
+}
+
+//===----------------------------------------------------------------------===//
+// Escape through external "already escaping" objects
+//===----------------------------------------------------------------------===//
+
+/*
 void escape_through_ptr_argument_aliasing(int *k) {
 	int *p = k;
 }
@@ -29,13 +46,10 @@ void escape_through_gptr_aliasing() {
 	int *GPtrAlias = GPtr;
 }
 
-/*
 void bar(int **p) {
 	**p = 222;
 }
-*/
 
-/*
 void escape_address_of_pointer() {
 	int x = 111;
 	int *p = &x;
@@ -50,6 +64,10 @@ int main() {
 	return 0;
 }
 */
+
+//===----------------------------------------------------------------------===//
+// Aliases
+//===----------------------------------------------------------------------===//
 
 /*
 void mutual_aliases_cond() {
