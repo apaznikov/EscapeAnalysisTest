@@ -22,12 +22,22 @@ int GArr[N];
 int **DoubleGPtr;
 
 //===----------------------------------------------------------------------===//
+// Atomic
+//===----------------------------------------------------------------------===//
+
+// _Atomic(int*) p;
+// void atomic() {
+	// int *pp = __c11_atomic_load(&p, __ATOMIC_RELAXED);
+	// *pp = 444;
+// }
+
+//===----------------------------------------------------------------------===//
 // PHIs
 //===----------------------------------------------------------------------===//
 
+/*
 void func(int **ptr);
 
-/*
 void nested_phi() {
 	int x, y, z;
 	int *p = malloc(sizeof(int)), *q = &z;
@@ -73,6 +83,7 @@ void aliasing_phi() {
 }
 */
 
+/*
 void escaping_phi() {
 	int x, y;
 	int *p;
@@ -85,6 +96,7 @@ void escaping_phi() {
 
 	GPtr = p;
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // Using global arrays, ConstExpr GEPs
@@ -109,6 +121,9 @@ void escape_through_const_expr_GEP() {
 void escape_through_ptr_argument_aliasing(int *k) {
 	int *p = k;
 }
+*/
+
+/*
 
 void escape_through_gptr_aliasing() {
 	int *GPtrAlias = GPtr;
@@ -234,7 +249,6 @@ void passing_by_value_is_not_escaping() {
 */
 
 /*
-// TODO
 void escape_to_global_array_element() {
 	int x;
 	GArr[5] = x;
@@ -446,7 +460,7 @@ void escape_nested_struct() {
 	OuterStructTy OuterS = { InnerS };
 	GS = &OuterS; // Escape due to nested structure
 }
- */
+*/
 
 /*
 
