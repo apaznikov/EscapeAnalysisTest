@@ -32,6 +32,64 @@ int **DoubleGPtr;
 // }
 
 //===----------------------------------------------------------------------===//
+// Casts
+//===----------------------------------------------------------------------===//
+
+//void ptrtoint_and_inttoptr() {
+//	int y;
+//	int *x = (int *)(long int)&y;
+//	GPtr = x;
+//}
+
+//void func2() {
+//	float *y;
+//	int *x = (int*) y;
+//	GPtr = x;
+//}
+
+//struct S {
+//	int *x;
+//};
+
+//void function_pointer_cast() {
+//	struct S S1;
+//	int x;
+//	S1.x = &x;
+//	int *p = S1.x;
+//	GPtr = p;
+//}
+
+//void cast_to_array_type() {
+//	int x;
+//	int arr[5] = (int)&x;  // Cast to array type
+//	GPtr = (int *)arr; // Escape, pointer arithmetic on arr could access x
+//}
+
+//void truncate() {
+//	long long x;
+//	int *y = (int *)x;   // Truncation, like trunc
+//	GPtr = y;  // Potential escape, especially if *y is modified
+//}
+
+//void cast_with_arithmetic() {
+//	int x;
+//	long long *y = (long long *)&x;
+//	y++; // Pointer arithmetic after cast can be tricky for escape analysis
+//	GPtr = (int *)y; // Likely escapes
+//}
+
+//void inttoptr_cast() {
+//	double *x;
+//	GPtr = (int *)x;
+//}
+
+//void inttoptr_cast() {
+//	long int x;
+//	GPtr = (int *)x;
+//}
+
+
+//===----------------------------------------------------------------------===//
 // PHIs
 //===----------------------------------------------------------------------===//
 

@@ -51,6 +51,7 @@ add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
         DEPENDS EscapeAnalysisTest.ll
         COMMENT "Running Escape Analysis Printer"
 )
+#-passes=mem2reg
 
 # Run Escape Analysis Printer
 add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
