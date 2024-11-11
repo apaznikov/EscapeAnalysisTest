@@ -33,7 +33,6 @@ target_compile_options(EscapeAnalysisTest PRIVATE -O0 -S -emit-llvm
 # Run Escape Analysis Printer
 add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
         COMMAND ${OPT_EXECUTABLE}
-                -passes=mem2reg
                 -S EscapeAnalysisTest.ll
                 -o EscapeAnalysisTest_mem2reg.ll
         COMMAND  ${OPT_EXECUTABLE}
@@ -44,6 +43,7 @@ add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
         DEPENDS EscapeAnalysisTest.ll
         COMMENT "Running Escape Analysis Printer"
 )
+#-passes=mem2reg
 
 # Run Escape Analysis Printer
 add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
