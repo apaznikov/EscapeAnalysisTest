@@ -6,11 +6,7 @@
       <option name="INDENT_CLASS_MEMBERS" value="2" />
       <option name="INDENT_INSIDE_CODE_BLOCK" value="2" />
     </Objective-C>
-    <clangFormatSettings>
-      <option name="ENABLED" value="true" />
-    </clangFormatSettings>
     <codeStyleSettings language="ObjectiveC">
-      <option name="RIGHT_MARGIN" value="80" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="4" />

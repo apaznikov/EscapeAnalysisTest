@@ -160,10 +160,19 @@ void escaping_phi() {
 // Using global arrays, ConstExpr GEPs
 //===----------------------------------------------------------------------===//
 
-/*
-char GStr[] = "abracadabra";
-int *PtrArr[N];
+// static char GStr[] = "abracadabra";
+// static void *PtrArr[N];
+// static void *StaticPtr;
 
+// void escape_through_const_expr_GEP() {
+// 	GStr[3] = 'z';		// no escape
+// 	int x = rand();
+// 	StaticPtr = &x;		// escape
+// 	int y = rand();
+// 	PtrArr[5] = &y;		// escape
+// }
+
+/*
 void escape_through_const_expr_GEP() {
 	GStr[3] = 'z';		// no escape
 	int x;
