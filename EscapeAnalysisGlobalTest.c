@@ -19,10 +19,16 @@ void callee1_level1(int *x) {
 
 void callee2_level1(int *x) {
 	*x = 333;
+	int *p = x;
+	printf("%p\n", &p);
 }
+
+void external_func(int *x);
 
 void parent() {
 	int x;
 	callee1_level1(&x);
 	callee2_level1(&x);
+	int y;
+	external_func(&y);
 }

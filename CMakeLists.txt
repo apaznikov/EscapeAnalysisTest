@@ -39,7 +39,7 @@ function(add_escape_analysis_target target_name source_file analysis_pass)
 
         add_custom_command(TARGET ${target_name} POST_BUILD
                 COMMAND ${OPT_EXECUTABLE}
-                -passes=sroa
+                -passes=mem2reg
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
                 COMMAND ${OPT_EXECUTABLE}
