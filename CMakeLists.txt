@@ -46,22 +46,21 @@ function(add_escape_analysis_target target_name source_file analysis_pass)
                 -S -passes='print<${analysis_pass}>'
                 -debug-only=ea
                 ${target_name}_mem2reg.ll -disable-output
-                -debug-only=escape-analysis
                 DEPENDS ${target_name}.ll
                 COMMENT "Running ${analysis_pass} Printer"
         )
 
         # Run Escape Analysis Printer
-        add_custom_command(TARGET EscapeAnalysisTest POST_BUILD
-                COMMAND ${CLANG_EXECUTABLE}
-                -S -emit-llvm -fsanitize=thread
-                -O2
-                -mllvm -tsan-use-escape-analysis
-                -mllvm -debug-only=tsan
-                ../${source_file}
-                -o ${target_name}_TSan_instr.ll
-                COMMENT "Running TSan"
-        )
+#        add_custom_command(TARGET ${target_name} POST_BUILD
+#                COMMAND ${CLANG_EXECUTABLE}
+#                -S -emit-llvm -fsanitize=thread
+#                -O2
+#                -mllvm -tsan-use-escape-analysis
+#                -mllvm -debug-only=tsan
+#                ../${source_file}
+#                -o ${target_name}_TSan_instr.ll
+#                COMMENT "Running TSan"
+#        )
 endfunction()
 
 add_escape_analysis_target(EscapeAnalysisTest EscapeAnalysisTest.c escape-analysis)
