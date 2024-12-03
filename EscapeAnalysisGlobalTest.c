@@ -6,10 +6,23 @@
 int* GPtr;
 
 //===----------------------------------------------------------------------===//
+// Function returning address
+//===----------------------------------------------------------------------===//
+
+int *ret_ptr() {
+	return GPtr;
+}
+
+void use_ret_ptr() {
+	int *p = ret_ptr();
+	*p = 555;
+}
+
+//===----------------------------------------------------------------------===//
 // Recursive
 //===----------------------------------------------------------------------===//
 
-/*
+	/*
 // Simple recursive function
 void rec_func(int *x) {
 	if (*x) {
@@ -23,15 +36,18 @@ void SCC_foo(int *x);
 void SCC_bar(int *x);
 void SCC_buz(int *x);
 
-void SCC_foo(int *x) {
+__attribute_noinline__ void SCC_foo(int *x) {
+	*x = 111;
 	SCC_bar(x);
 }
 
-void SCC_bar(int *x) {
+__attribute_noinline__ void SCC_bar(int *x) {
+	*x = 222;
 	SCC_buz(x);
 }
 
-void SCC_buz(int *x) {
+__attribute_noinline__ void SCC_buz(int *x) {
+	*x = 333;
 	SCC_foo(x);
 }
 */
@@ -40,6 +56,7 @@ void SCC_buz(int *x) {
 // First test
 //===----------------------------------------------------------------------===//
 
+/*
 void level2_func1(int *x) {
 	GPtr = x;											// Escape through GPtr
 }
@@ -75,3 +92,4 @@ void parent_func1() {
 	int z, p;
 	level1_func3(&z, &p);
 }
+*/

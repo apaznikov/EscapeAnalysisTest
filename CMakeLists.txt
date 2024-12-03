@@ -29,17 +29,19 @@ message(STATUS "Found llvm-link: ${LLVM_LINK_EXECUTABLE}")
 set(CMAKE_C_LINK_EXECUTABLE
         "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
 
-function(add_escape_analysis_target target_name source_file analysis_pass)
+function(add_escape_analysis_target target_name source_file
+        analysis_pass tsan_ea_option)
         add_executable(${target_name} ${source_file})
 
         target_compile_options(${target_name} PRIVATE -O0 -S -emit-llvm
-                -Wno-unused-command-line-argument -Wno-return-stack-address
+                -Wno-unused-command-line-argument
+                -Wno-return-stack-address
                 -Xclang -disable-O0-optnone
         )
 
         add_custom_command(TARGET ${target_name} POST_BUILD
                 COMMAND ${OPT_EXECUTABLE}
-                -passes=mem2reg
+                -O1
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
                 COMMAND ${OPT_EXECUTABLE}
@@ -54,17 +56,22 @@ function(add_escape_analysis_target target_name source_file analysis_pass)
 #        add_custom_command(TARGET ${target_name} POST_BUILD
 #                COMMAND ${CLANG_EXECUTABLE}
 #                -S -emit-llvm -fsanitize=thread
-#                -O2
-#                -mllvm -tsan-use-escape-analysis
+#                -O1 -fno-inline-functions
+#                -mllvm ${tsan_ea_option}
 #                -mllvm -debug-only=tsan
+#                -Wno-return-stack-address
 #                ../${source_file}
 #                -o ${target_name}_TSan_instr.ll
 #                COMMENT "Running TSan"
 #        )
 endfunction()
 
-add_escape_analysis_target(EscapeAnalysisTest EscapeAnalysisTest.c escape-analysis)
-add_escape_analysis_target(EscapeAnalysisGlobalTest EscapeAnalysisGlobalTest.c escape-analysis-global)
+add_escape_analysis_target(
+        EscapeAnalysisTest EscapeAnalysisTest.c
+        escape-analysis -tsan-use-escape-analysis)
+add_escape_analysis_target(
+        EscapeAnalysisGlobalTest EscapeAnalysisGlobalTest.c
+        escape-analysis-global -tsan-use-escape-analysis-global)
 
 ####################################################################################
 
@@ -76,11 +83,14 @@ set(CMAKE_CXX_LINK_EXECUTABLE
         "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
 
 target_compile_options(TSanTest PRIVATE
-        -O0 -S -emit-llvm
+        -O2 -S -emit-llvm
         -o TSanTest_instr.ll
         -fsanitize=thread
-        -mllvm -tsan-use-escape-analysis
-        -Wno-unused-command-line-argument -Wno-return-stack-address
+        -mllvm -tsan-use-escape-analysis-global
+        -mllvm -debug-only=tsan
+        -mllvm -debug-only=ea
+        -Wno-unused-command-line-argument
+        -Wno-return-stack-address
         -Xclang -disable-O0-optnone
 )
 
