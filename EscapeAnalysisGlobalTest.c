@@ -1,14 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 // ================== DEFINITIONS ==================
 
 int* GPtr;
 
+void *thread(void *x) {
+	*(int *)(x) = 222;
+	return NULL;
+}
+
+// void race() {
+	// int data = 0;
+	// pthread_t t;
+	// pthread_create(&t, NULL, thread, &data);
+	// data = 111;
+	// pthread_join(t, NULL);
+// }
+
 //===----------------------------------------------------------------------===//
 // Function returning address
 //===----------------------------------------------------------------------===//
 
+/*
 int *ret_ptr() {
 	return GPtr;
 }
@@ -17,6 +32,7 @@ void use_ret_ptr() {
 	int *p = ret_ptr();
 	*p = 555;
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // Recursive
