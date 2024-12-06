@@ -1,15 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 
 // ================== DEFINITIONS ==================
 
 int* GPtr;
 
-void *thread(void *x) {
-	*(int *)(x) = 222;
-	return NULL;
-}
+//===----------------------------------------------------------------------===//
+// Aliasing to function arguments
+//===----------------------------------------------------------------------===//
+
+// void *func_with_ptr_arg(int *PtrArg) {
+	// int *Alias = PtrArg;
+	// *Alias = 333;
+	// return NULL;
+// }
+
+//===----------------------------------------------------------------------===//
+// Function returning address
+//===----------------------------------------------------------------------===//
 
 // void race() {
 	// int data = 0;
@@ -72,7 +82,6 @@ __attribute_noinline__ void SCC_buz(int *x) {
 // First test
 //===----------------------------------------------------------------------===//
 
-/*
 void level2_func1(int *x) {
 	GPtr = x;											// Escape through GPtr
 }
@@ -108,4 +117,3 @@ void parent_func1() {
 	int z, p;
 	level1_func3(&z, &p);
 }
-*/

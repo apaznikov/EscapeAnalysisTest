@@ -41,7 +41,6 @@ function(add_escape_analysis_target target_name source_file
 
         add_custom_command(TARGET ${target_name} POST_BUILD
                 COMMAND ${OPT_EXECUTABLE}
-                -O1
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
                 COMMAND ${OPT_EXECUTABLE}
@@ -51,6 +50,7 @@ function(add_escape_analysis_target target_name source_file
                 DEPENDS ${target_name}.ll
                 COMMENT "Running ${analysis_pass} Printer"
         )
+#-passes=mem2reg
 
         # Run Escape Analysis Printer
 #        add_custom_command(TARGET ${target_name} POST_BUILD
@@ -82,13 +82,13 @@ set_target_properties(TSanTest PROPERTIES CXX_COMPILER ${CLANG_CXX_EXECUTABLE})
 set(CMAKE_CXX_LINK_EXECUTABLE
         "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mllvm -debug-only=tsan -mllvm -debug-only=ea")
+
 target_compile_options(TSanTest PRIVATE
         -O2 -S -emit-llvm
         -o TSanTest_instr.ll
         -fsanitize=thread
         -mllvm -tsan-use-escape-analysis-global
-        -mllvm -debug-only=tsan
-        -mllvm -debug-only=ea
         -Wno-unused-command-line-argument
         -Wno-return-stack-address
         -Xclang -disable-O0-optnone
