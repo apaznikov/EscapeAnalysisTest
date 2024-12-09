@@ -48,33 +48,54 @@ void use_ret_ptr() {
 // Recursive
 //===----------------------------------------------------------------------===//
 
-	/*
+/*
 // Simple recursive function
-void rec_func(int *x) {
+void rec_func(int *x, int *y) {
 	if (*x) {
 		(*x)--;
-		rec_func(x);
+		rec_func(x, y);
+		GPtr = y;
 	}
 }
+*/
 
-// SCC of 3 mutually recursive functions
-void SCC_foo(int *x);
-void SCC_bar(int *x);
-void SCC_buz(int *x);
+// SCC of 3 mutually functions
+void bar(int *x);
 
-__attribute_noinline__ void SCC_foo(int *x) {
-	*x = 111;
-	SCC_bar(x);
+void foo(int *x) {
+	int *xAlias = x;
+	if (rand())
+		bar(x);
 }
 
-__attribute_noinline__ void SCC_bar(int *x) {
-	*x = 222;
-	SCC_buz(x);
+void bar(int *x) {
+	GPtr = x;
+	foo(x);
 }
 
-__attribute_noinline__ void SCC_buz(int *x) {
-	*x = 333;
-	SCC_foo(x);
+/*
+void SCC_foo(int *x, int *y, int *z, int *p, int *NoEsc);
+void SCC_bar(int *x, int *y, int *z, int *p, int *NoEsc);
+void SCC_buz(int *x, int *y, int *z, int *p, int *NoEsc);
+
+__attribute_noinline__ void SCC_foo(int *x, int *y, int *z, int *p, int *NoEsc) {
+	GPtr = x;
+	SCC_bar(x, y, z, p, NoEsc);
+}
+
+__attribute_noinline__ void SCC_bar(int *x, int *y, int *z, int *p, int *NoEsc) {
+	GPtr = y;
+	int *xAlias = x;
+	int *yAlias = y;
+	int *zAlias = z;
+	if (rand())
+		GPtr = p;
+	SCC_buz(x, y, z, p, NoEsc);
+}
+
+__attribute_noinline__ void SCC_buz(int *x, int *y, int *z, int *p, int *NoEsc) {
+	GPtr = z;
+	SCC_foo(x, y, z, p, NoEsc);
 }
 */
 
@@ -82,6 +103,7 @@ __attribute_noinline__ void SCC_buz(int *x) {
 // First test
 //===----------------------------------------------------------------------===//
 
+/*
 void level2_func1(int *x) {
 	GPtr = x;											// Escape through GPtr
 }
@@ -117,3 +139,4 @@ void parent_func1() {
 	int z, p;
 	level1_func3(&z, &p);
 }
+*/
