@@ -11,11 +11,16 @@ int* GPtr;
 // Aliasing to function arguments
 //===----------------------------------------------------------------------===//
 
-// void *func_with_ptr_arg(int *PtrArg) {
-	// int *Alias = PtrArg;
-	// *Alias = 333;
-	// return NULL;
-// }
+/*
+void *func_with_ptr_arg(int *x, int *y) {
+	int *Alias = x;
+	*Alias = 333;
+	if (rand())
+		GPtr = x;
+	GPtr = y;
+	return NULL;
+}
+*/
 
 //===----------------------------------------------------------------------===//
 // Function returning address
@@ -48,17 +53,20 @@ void use_ret_ptr() {
 // Recursive
 //===----------------------------------------------------------------------===//
 
-/*
 // Simple recursive function
-void rec_func(int *x, int *y) {
-	if (*x) {
-		(*x)--;
-		rec_func(x, y);
-		GPtr = y;
+void rec_func(int *x, int *y, int *z) {
+	if (rand()) {
+		int *Alias = y;
+		*Alias = 333;
+	} else {
+		rec_func(x, y, z);
 	}
+	int *Alias2 = x;
+	GPtr = Alias2;
+	GPtr = y;
 }
-*/
 
+/*
 // SCC of 3 mutually functions
 void bar(int *x);
 
@@ -72,6 +80,7 @@ void bar(int *x) {
 	GPtr = x;
 	foo(x);
 }
+*/
 
 /*
 void SCC_foo(int *x, int *y, int *z, int *p, int *NoEsc);
