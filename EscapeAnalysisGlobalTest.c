@@ -11,6 +11,40 @@ int* GPtr;
 // Aliasing to function arguments
 //===----------------------------------------------------------------------===//
 
+void use_esc_func(int *x, int *y) {
+	// GPtr is escaping, but it's obvious, not print
+	printf("%p", GPtr);
+	/*
+	// GPtr is escaping, but it's obvious, not print
+	GPtr = GPtr;
+	// x escapes here
+	printf("%p", x);
+	// Alias escapes as an alias of GPtr
+	int *Alias = GPtr + 3;
+	// xAlias escapes as x escapes
+	int *xAlias = x + 3;
+	// yAlias doesn't escape as y doesn't escaps
+	int *yAlias = y + 3;
+	*/
+}
+
+/*
+void args_are_aliases(int *ArgX, int *ArgY) {
+	int *k;
+	// int *x = k;
+	k = ArgX;
+	if (rand()) {
+		k = ArgX;
+	}
+	GPtr = ArgX;
+}
+
+void caller() {
+	int x, y;
+	args_are_aliases(&x, &y);
+}
+*/
+
 /*
 void *func_with_ptr_arg(int *x, int *y) {
 	int *Alias = x;
@@ -19,6 +53,27 @@ void *func_with_ptr_arg(int *x, int *y) {
 		GPtr = x;
 	GPtr = y;
 	return NULL;
+}
+*/
+
+// void alias_of_ptr_arg(int *PtrArg) {
+	// int *Alias = PtrArg;
+	// printf("%p\n", PtrArg);
+// }
+
+/*
+void alias_of_ptr_arg_2(int *Arg1, int *Arg2) {
+	int *x = Arg1;
+	int *y;
+	if (rand())
+		GPtr = x;
+    else
+		y = Arg2;
+}
+
+void alias_of_ptr_arg_2_caller() {
+	int x, y;
+	alias_of_ptr_arg_2(&x, &y);
 }
 */
 
@@ -53,6 +108,7 @@ void use_ret_ptr() {
 // Recursive
 //===----------------------------------------------------------------------===//
 
+/*
 // Simple recursive function
 void rec_func(int *x, int *y, int *z) {
 	if (rand()) {
@@ -65,6 +121,7 @@ void rec_func(int *x, int *y, int *z) {
 	GPtr = Alias2;
 	GPtr = y;
 }
+*/
 
 /*
 // SCC of 3 mutually functions
