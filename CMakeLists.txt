@@ -85,7 +85,8 @@ set(CMAKE_CXX_LINK_EXECUTABLE
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mllvm -debug-only=tsan -mllvm -debug-only=ea")
 
 target_compile_options(TSanTest PRIVATE
-        -O2 -S -emit-llvm
+        #-O2
+        -S -emit-llvm
         -o TSanTest_instr.ll
         -fsanitize=thread
         -mllvm -tsan-use-escape-analysis-global

@@ -8,13 +8,40 @@
 int* GPtr;
 
 //===----------------------------------------------------------------------===//
+// Returning value
+//===----------------------------------------------------------------------===//
+
+// void ret_escaping_value() {
+// 	int *x;
+// 	GPtr = x;
+// }
+
+int *ret_non_escaping_value() {
+	int *x;
+	return x;
+}
+
+int *ret_escaping_value() {
+	int *x;
+	GPtr = x;
+	return x;
+}
+
+void func() {
+	int *x = ret_non_escaping_value();
+	int *y = ret_escaping_value();
+	int *z = malloc(sizeof(int));
+	int *p = realloc(NULL, sizeof(int));
+}
+
+//===----------------------------------------------------------------------===//
 // Aliasing to function arguments
 //===----------------------------------------------------------------------===//
 
+	/*
 void use_esc_func(int *x, int *y) {
 	// GPtr is escaping, but it's obvious, not print
 	printf("%p", GPtr);
-	/*
 	// GPtr is escaping, but it's obvious, not print
 	GPtr = GPtr;
 	// x escapes here
@@ -25,8 +52,8 @@ void use_esc_func(int *x, int *y) {
 	int *xAlias = x + 3;
 	// yAlias doesn't escape as y doesn't escaps
 	int *yAlias = y + 3;
-	*/
 }
+	*/
 
 /*
 void args_are_aliases(int *ArgX, int *ArgY) {

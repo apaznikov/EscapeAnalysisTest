@@ -22,7 +22,9 @@ char *data2 = new char[10];
 
 int main() {
 	// barrier_init(&barrier, 2);
-	print_address("addr1=", 1, &data[3]);
+	// int *x = new int;
+	// printf("%p\n", x);
+	// print_address("addr1=", 1, &data[3]);
 	// print_address("addr2=", 1, &data[5]);
 	// pthread_t t[2];
 	// pthread_create(&t[0], NULL, Thread1, NULL);
