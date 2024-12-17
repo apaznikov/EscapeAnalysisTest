@@ -7,6 +7,31 @@
 
 int* GPtr;
 
+void foo() {
+  // int x[10];
+  // GPtr = &x[3];
+  // int *y = &x[5];
+
+  int x;
+  GPtr = &x;
+  int *y = &x + 5;
+  if (rand())
+    int *z = y;
+  int *p = y + 55;
+}
+
+// void func(int *x) {
+  // int y = *x;
+  // printf("%d\n", y);
+// }
+
+// void func(int *x) {
+	// int *Alias = x + 1;
+	// *Alias = 333;
+	// int y;
+	// GPtr = &y;
+// }
+
 //===----------------------------------------------------------------------===//
 // Returning value
 //===----------------------------------------------------------------------===//
@@ -16,6 +41,7 @@ int* GPtr;
 // 	GPtr = x;
 // }
 
+/*
 int *ret_non_escaping_value() {
 	int *x;
 	return x;
@@ -33,12 +59,13 @@ void func() {
 	int *z = malloc(sizeof(int));
 	int *p = realloc(NULL, sizeof(int));
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // Aliasing to function arguments
 //===----------------------------------------------------------------------===//
 
-	/*
+/*
 void use_esc_func(int *x, int *y) {
 	// GPtr is escaping, but it's obvious, not print
 	printf("%p", GPtr);
@@ -53,7 +80,7 @@ void use_esc_func(int *x, int *y) {
 	// yAlias doesn't escape as y doesn't escaps
 	int *yAlias = y + 3;
 }
-	*/
+*/
 
 /*
 void args_are_aliases(int *ArgX, int *ArgY) {
@@ -72,21 +99,41 @@ void caller() {
 }
 */
 
+//===----------------------------------------------------------------------===//
+// SCC 2
+//===----------------------------------------------------------------------===//
+
 /*
-void *func_with_ptr_arg(int *x, int *y) {
+void func2(int *x, int *y, int *z);
+
+void func1(int *x, int *y, int *z, int *NoEsc) {
 	int *Alias = x;
 	*Alias = 333;
 	if (rand())
 		GPtr = x;
-	GPtr = y;
-	return NULL;
+	printf("%p", y);
+	func2(x, y, z);
+}
+
+void func2(int *x, int *y, int *z) {
+	int *NoEsc;
+	if (rand())
+        func1(&x, &y, &z, &NoEsc);
+	printf("%p\n", z);
+}
+
+void caller() {
+	int x, y, z, NoEsc;
+	func1(&x, &y, &z, &NoEsc);
 }
 */
 
-// void alias_of_ptr_arg(int *PtrArg) {
-	// int *Alias = PtrArg;
-	// printf("%p\n", PtrArg);
-// }
+/*
+void alias_of_ptr_arg(int *PtrArg) {
+	int *Alias = PtrArg;
+	printf("%p\n", PtrArg);
+}
+*/
 
 /*
 void alias_of_ptr_arg_2(int *Arg1, int *Arg2) {
@@ -150,8 +197,8 @@ void rec_func(int *x, int *y, int *z) {
 }
 */
 
-/*
 // SCC of 3 mutually functions
+/*
 void bar(int *x);
 
 void foo(int *x) {

@@ -1,10 +1,18 @@
-#include "test.h"
+// #include "test.h"
 #include <memory>
 #include <string.h>
+#include <stdio.h>
 
-char *data = new char[10];
-char *data1 = new char[10];
-char *data2 = new char[10];
+void func(int *x) {
+  int *y = &x[55];
+  printf("%p\n", y);
+  // int LV;
+  // printf("%p\n", &LV);
+}
+
+// char *data = new char[10];
+// char *data1 = new char[10];
+// char *data2 = new char[10];
 
 // void *Thread1(void *x) {
 // 	static volatile int size = 1;
@@ -20,7 +28,7 @@ char *data2 = new char[10];
 // 	return NULL;
 // }
 
-int main() {
+// int main() {
 	// barrier_init(&barrier, 2);
 	// int *x = new int;
 	// printf("%p\n", x);
@@ -31,24 +39,23 @@ int main() {
 	// pthread_create(&t[1], NULL, Thread2, NULL);
 	// pthread_join(t[0], NULL);
 	// pthread_join(t[1], NULL);
-	return 0;
-}
-
+	// return 0;
+// }
 
 /*
-void *thread(void *x) {
-	barrier_wait(&barrier);
-	*static_cast<int *>(x) = 222;
-	return nullptr;
+void *thread_func(void *x) {
+  barrier_wait(&barrier);
+  *static_cast<int *>(x) = 222;
+  return nullptr;
 }
 
 static void race() {
-	int data = 0;
-	pthread_t t;
-	pthread_create(&t, nullptr, thread, &data);
-	data = 111;
-	barrier_wait(&barrier);
-	pthread_join(t, nullptr);
+  int data = 0;
+  pthread_t t;
+  pthread_create(&t, nullptr, thread_func, &data);
+  data = 111;
+  barrier_wait(&barrier);
+  pthread_join(t, nullptr);
 }
 
 struct X {
