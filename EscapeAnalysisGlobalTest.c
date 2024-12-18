@@ -7,6 +7,7 @@
 
 int* GPtr;
 
+/*
 void foo() {
   // int x[10];
   // GPtr = &x[3];
@@ -19,6 +20,7 @@ void foo() {
     int *z = y;
   int *p = y + 55;
 }
+*/
 
 // void func(int *x) {
   // int y = *x;
@@ -36,30 +38,23 @@ void foo() {
 // Returning value
 //===----------------------------------------------------------------------===//
 
-// void ret_escaping_value() {
-// 	int *x;
-// 	GPtr = x;
-// }
-
-/*
 int *ret_non_escaping_value() {
-	int *x;
-	return x;
+  int *x;
+  return x;
 }
 
 int *ret_escaping_value() {
-	int *x;
-	GPtr = x;
-	return x;
+  int *y;
+  GPtr = y;
+  return y;
 }
 
 void func() {
-	int *x = ret_non_escaping_value();
-	int *y = ret_escaping_value();
-	int *z = malloc(sizeof(int));
-	int *p = realloc(NULL, sizeof(int));
+  int *x = ret_non_escaping_value();
+  int *y = ret_escaping_value();
+  int *z = malloc(sizeof(int));
+  int *p = realloc(NULL, sizeof(int));
 }
-*/
 
 //===----------------------------------------------------------------------===//
 // Aliasing to function arguments
@@ -155,13 +150,20 @@ void alias_of_ptr_arg_2_caller() {
 // Function returning address
 //===----------------------------------------------------------------------===//
 
-// void race() {
-	// int data = 0;
-	// pthread_t t;
-	// pthread_create(&t, NULL, thread, &data);
-	// data = 111;
-	// pthread_join(t, NULL);
-// }
+/*
+static void *thread_func(void *data) {
+  int *x = (int *)data;
+  *x = 111;
+}
+
+void race() {
+  int data = 0;
+  pthread_t t;
+  pthread_create(&t, NULL, thread_func, &data);
+  data = 111;
+  pthread_join(t, NULL);
+}
+*/
 
 //===----------------------------------------------------------------------===//
 // Function returning address
