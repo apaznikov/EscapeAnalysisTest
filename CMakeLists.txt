@@ -52,18 +52,18 @@ function(add_escape_analysis_target target_name source_file
         )
 #-passes=mem2reg
 
-        # Run Escape Analysis Printer
-        add_custom_command(TARGET ${target_name} POST_BUILD
-                COMMAND ${CLANG_EXECUTABLE}
-                -S -emit-llvm -fsanitize=thread
-                -fno-inline-functions
-                -mllvm ${tsan_ea_option}
-                -mllvm -debug-only=tsan
-                -Wno-return-stack-address
-                ../${source_file}
-                -o ${target_name}_TSan_instr.ll
-                COMMENT "Running TSan"
-        )
+        # Run TSan
+#        add_custom_command(TARGET ${target_name} POST_BUILD
+#                COMMAND ${CLANG_EXECUTABLE}
+#                -S -emit-llvm -fsanitize=thread
+#                -fno-inline-functions
+#                -mllvm ${tsan_ea_option}
+#                -mllvm -debug-only=tsan
+#                -Wno-return-stack-address
+#                ../${source_file}
+#                -o ${target_name}_TSan_instr.ll
+#                COMMENT "Running TSan"
+#        )
 endfunction()
 
 add_escape_analysis_target(

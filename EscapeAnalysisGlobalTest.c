@@ -7,6 +7,42 @@
 
 int* GPtr;
 
+//===----------------------------------------------------------------------===//
+// New argument strategy for static functions
+//===----------------------------------------------------------------------===//
+
+void level2_func1(int *x) {
+  GPtr = x; // Escape through GPtr
+}
+
+void level2_func2(int *x) { *x = 333; }
+
+void level1_func1(int *x) { level2_func1(x); }
+
+void level1_func2(int *x) {
+  *x = 333;
+  int *p = x;
+  printf("%p\n", &p); // Escape through external func call
+}
+
+void level1_func3(int *x, int *p) {
+  *x = 42;
+  level2_func2(x);
+  level2_func1(p);
+}
+
+void external_func(int *x);
+
+void parent_func1() {
+  int x;
+  level1_func1(&x);
+  level1_func2(&x);
+  int y;
+  external_func(&y);
+  int z, p;
+  level1_func3(&z, &p);
+}
+
 /*
 void foo() {
   // int x[10];
@@ -38,6 +74,7 @@ void foo() {
 // Returning value
 //===----------------------------------------------------------------------===//
 
+/*
 int *ret_non_escaping_value() {
   int *x;
   return x;
@@ -55,6 +92,7 @@ void func() {
   int *z = malloc(sizeof(int));
   int *p = realloc(NULL, sizeof(int));
 }
+*/
 
 //===----------------------------------------------------------------------===//
 // Aliasing to function arguments
