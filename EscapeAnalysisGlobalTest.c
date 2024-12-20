@@ -11,6 +11,7 @@ int* GPtr;
 // New argument strategy for static functions
 //===----------------------------------------------------------------------===//
 
+/*
 void level2_func1(int *x) {
   GPtr = x; // Escape through GPtr
 }
@@ -29,6 +30,7 @@ void level1_func3(int *x, int *p) {
   *x = 42;
   level2_func2(x);
   level2_func1(p);
+  level2_func2(p);
 }
 
 void external_func(int *x);
@@ -42,6 +44,7 @@ void parent_func1() {
   int z, p;
   level1_func3(&z, &p);
 }
+*/
 
 /*
 void foo() {
@@ -189,7 +192,7 @@ void alias_of_ptr_arg_2_caller() {
 //===----------------------------------------------------------------------===//
 
 /*
-static void *thread_func(void *data) {
+void *thread_func(void *data) {
   int *x = (int *)data;
   *x = 111;
 }
@@ -222,20 +225,19 @@ void use_ret_ptr() {
 // Recursive
 //===----------------------------------------------------------------------===//
 
-/*
 // Simple recursive function
 void rec_func(int *x, int *y, int *z) {
 	if (rand()) {
 		int *Alias = y;
-		*Alias = 333;
-	} else {
+		// *Alias = 333;
+	}
+ else {
 		rec_func(x, y, z);
 	}
-	int *Alias2 = x;
-	GPtr = Alias2;
-	GPtr = y;
+	// int *Alias2 = x;
+	// GPtr = Alias2;
+	// GPtr = y;
 }
-*/
 
 // SCC of 3 mutually functions
 /*
