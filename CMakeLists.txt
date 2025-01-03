@@ -43,6 +43,7 @@ function(add_escape_analysis_target target_name source_file
                 COMMAND ${OPT_EXECUTABLE}
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
+#                -passes=mem2reg
                 COMMAND ${OPT_EXECUTABLE}
                 -S -passes='print<${analysis_pass}>'
                 -debug-only=ea
@@ -68,7 +69,7 @@ endfunction()
 
 add_escape_analysis_target(
         EscapeAnalysisTest EscapeAnalysisTest.c
-        escape-analysis -tsan-use-escape-analysis)
+        escape-analysis-global -tsan-use-escape-analysis-global)
 add_escape_analysis_target(
         EscapeAnalysisGlobalTest EscapeAnalysisGlobalTest.c
         escape-analysis-global -tsan-use-escape-analysis-global)

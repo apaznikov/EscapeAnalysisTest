@@ -20,11 +20,12 @@ void *Ptr;
 int GV;
 int GArr[N];
 int **DoubleGPtr;
+void external_func(int* ptr);
 
-void test() {
-	int x;
-	GPtr = &x;
-}
+// void test() {
+  // int x;
+  // GPtr = &x;
+// }
 
 //===----------------------------------------------------------------------===//
 // Function returning address
@@ -61,11 +62,11 @@ void use_ret_ptr() {
 // Casts
 //===----------------------------------------------------------------------===//
 
-//void ptrtoint_and_inttoptr() {
-//	int y;
-//	int *x = (int *)(long int)&y;
-//	GPtr = x;
-//}
+// void ptrtoint_and_inttoptr() {
+  // int y;
+  // int *x = (int *)(long int)&y;
+  // GPtr = x;
+// }
 
 //void func2() {
 //	float *y;
@@ -104,16 +105,10 @@ void use_ret_ptr() {
 //	GPtr = (int *)y; // Likely escapes
 //}
 
-//void inttoptr_cast() {
-//	double *x;
-//	GPtr = (int *)x;
-//}
-
-//void inttoptr_cast() {
-//	long int x;
-//	GPtr = (int *)x;
-//}
-
+// void inttoptr_cast() {
+  // long int x;
+  // GPtr = (int *)&x;
+// }
 
 //===----------------------------------------------------------------------===//
 // PHIs
@@ -123,62 +118,63 @@ void use_ret_ptr() {
 void func(int **ptr);
 
 void nested_phi() {
-	int x, y, z;
-	int *p = malloc(sizeof(int)), *q = &z;
-	func(&q);
-	int *pqAlias = NULL;
+  int x, y, z;
+  int *p = malloc(sizeof(int));
+  int *q = &z;
+  func(&q);
+  int *pqAlias = NULL;
 
-	if (rand()) {
-		if (rand()) {
-			p = &x;
-		} else {
-			p = &y;
-		}
+  if (rand()) {
+    if (rand()) {
+      p = &x;
+    } else {
+      p = &y;
+    }
 
-		pqAlias = p;
-	} else {
-		pqAlias = q;
-	}
-	int *pqAliasAlias = pqAlias;
-	func(&pqAliasAlias);		// to supress pAlias propagation
+    pqAlias = p;
+  } else {
+    pqAlias = q;
+  }
+  int *pqAliasAlias = pqAlias;
+  func(&pqAliasAlias); // to supress pAlias propagation
 }
 */
 
 /*
 void aliasing_phi() {
-	int x, y;
-	int *p;
-	int *pAlias = NULL;
+        int x, y;
+        int *p;
+        int *pAlias = NULL;
 
-	if (GV) {
-		p = &x;
-	} else {
-		p = &y;
-	}
+        if (GV) {
+                p = &x;
+        } else {
+                p = &y;
+        }
 
-	// p = phi(x, y)
+        // p = phi(x, y)
 
-	// Phi seems to be a pointee in this aliasing
-	// but real pointees are x and y
-	pAlias = p;
+        // Phi seems to be a pointee in this aliasing
+        // but real pointees are x and y
+        pAlias = p;
 
-	func(&pAlias);		// to supress pAlias propagation
-	GPtr = pAlias;
+        func(&pAlias);		// to supress pAlias propagation
+        GPtr = pAlias;
 }
 */
 
 /*
 void escaping_phi() {
-	int x, y;
-	int *p;
+  int x, y;
+  int *p;
 
-	if (rand()) {
-		p = &x;
-	} else {
-		p = &y;
-	}
+  if (rand()) {
+    p = &x;
+  } else {
+    p = &y;
+  }
 
-	GPtr = p;
+  GPtr = p;
 }
 */
 
@@ -210,18 +206,33 @@ void escape_through_const_expr_GEP() {
 // Escape through external "already escaping" objects
 //===----------------------------------------------------------------------===//
 
-/*
-void escape_through_ptr_argument_aliasing(int *k) {
-	int *p = k;
+// void escape_through_ptr_argument(int **k) {
+  // int x;
+  // *k = &x;
+// }
+
+// void no_escape_through_ptr_argument(int *k) {
+  // int x;
+  // k = &x;
+// }
+
+// int **GPtrPtr;
+
+// void escape_through_gptrptr() {
+  // int *x;
+  // GPtrPtr = &x;
+  // int y;
+  // GPtr = &y;
+// }
+
+void no_escape_through_ptr_argument(int *k) {
 }
-*/
+
+// void no_escape_through_gptr() {
+  // int *GPtrAlias = GPtr;
+// }
 
 /*
-
-void escape_through_gptr_aliasing() {
-	int *GPtrAlias = GPtr;
-}
-
 void bar(int **p) {
 	**p = 222;
 }
@@ -261,27 +272,17 @@ void mutual_aliases_cond() {
 
 /*
 void mutual_aliases_loop() {
-	int x;
-	int *a1, *a2;
-	while (rand()) {
-		if (rand()) {
-			a1 = a2;
-			GPtr = a2;
-		} else {
-			a1 = &x;
-			x = 999;
-		}
-	}
-}
-*/
-
-/*
-void mutual_aliases() {
-	int x;
-	int *a1, *a2;
-	a1 = a2;
-	a1 = &x;
-	GPtr = a2;
+        int x;
+        int *a1, *a2;
+        while (rand()) {
+                if (rand()) {
+                        a1 = a2;
+                        GPtr = a2;
+                } else {
+                        a1 = &x;
+                        x = 999;
+                }
+        }
 }
 */
 
@@ -343,18 +344,15 @@ void passing_by_value_is_not_escaping() {
 
 /*
 void escape_to_global_array_element() {
-	int x;
-	GArr[5] = x;
+        int x;
+        GArr[5] = x;
 }
 */
 
 /*
-void external_func(int* ptr) {
-}
-
 void escaping_func_arguments(int x, int y, int *z) {
-	GPtr = &x;
-	external_func(&y);
+  GPtr = &x;
+  external_func(&y);
 }
 */
 
@@ -373,18 +371,18 @@ int foo() {
 
 /*
 void escape_pointee_object() {
-	int x[10];
-	int *p = &x[5];
-	GPtr = &x[2];
+  int x[10];
+  int *p = &x[5];
+  GPtr = &x[2];
 }
 */
 
 /*
 void escape_in_the_middle_of_alias_chain() {
-	int x[10];
-	int *y = &x[3];
-	int *z = &y[4];
-	GPtr = y;
+  int x[10];
+  int *y = &x[3];
+  int *z = &y[4];
+  GPtr = y;
 }
 */
 
@@ -479,28 +477,31 @@ int* escape_local() {
   int x;
   return &x;
 }
+*/
 
+/*
 // Assigning the address of a local variable to a global variable
-void escape_global() {
+void assigning_global_ptr() {
   int x = 20;
-  global_ptr = &x;
+  GPtr = &x;
 }
+*/
 
-
+/*
 // Passing the address of a local variable to a function
-int* escape_func() {
-  int x = 30;
+void escape_func() {
+  int x = 333;
   external_func(&x);
-  return &x;
 }
+*/
 
+/*
 // Escape by returning pointer
 int *escape_by_returning_ptr() {
 	int *x;
 	return x;
 }
 */
-
 
 /*
 // Escape through aliasing
@@ -538,32 +539,31 @@ void no_escape_memcpy() {
 
 /*
 typedef struct {
-	int *Ptr;
+        int *Ptr;
 } InnerStructTy;
 
 typedef struct {
-	InnerStructTy Inner;
+        InnerStructTy Inner;
 } OuterStructTy;
 
 OuterStructTy *GS;
 
 void escape_nested_struct() {
-	int x = 333;
-	InnerStructTy InnerS = { &x };
-	OuterStructTy OuterS = { InnerS };
-	GS = &OuterS; // Escape due to nested structure
+        int x = 333;
+        InnerStructTy InnerS = { &x };
+        OuterStructTy OuterS = { InnerS };
+        GS = &OuterS; // Escape due to nested structure
 }
 */
 
 /*
-
 void multiple_aliases() {
-	int x, y, z;
-	int *Ptr;
-	Ptr = &x;
-	Ptr = &y;
-	Ptr = &z;
-	GPtr = Ptr;
+  int x, y, z;
+  int *Ptr;
+  Ptr = &x;
+  Ptr = &y;
+  Ptr = &z;
+  GPtr = Ptr;
 }
 */
 
