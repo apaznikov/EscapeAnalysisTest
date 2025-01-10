@@ -6,8 +6,9 @@
 // ================== DEFINITIONS ==================
 
 int* GPtr;
+int **GPtrPtr;
 
-struct StructTy { int x, y; };
+// struct StructTy { int x, y; };
 
 //===----------------------------------------------------------------------===//
 // Check pointer strategies
@@ -39,7 +40,8 @@ void foo() {
 // New argument strategy for static functions
 //===----------------------------------------------------------------------===//
 
-/*
+struct StructTy { int *x; };
+
 static void level2_func1(int *x) {
   GPtr = x; // Escape through GPtr
 }
@@ -53,8 +55,6 @@ static void level1_func2(int *x) {
   int *p = x;
   printf("%p\n", &p); // Escape through external func call
 }
-
-struct StructTy { int *x; };
 
 static void level1_func3(int *x, int *y, int *z) {
   *x = 42;
@@ -82,11 +82,33 @@ void parent_func() {
   level1_func1(&x);
   level1_func2(&x);
 
-  int y;
-  external_func(&y);
+  int z;
+  external_func(&z);
 
-  int p, q;
-  level1_func3(&p, &q, &y);
+  int p, y;
+  level1_func3(&p, &y, &z);
+}
+
+/*
+static void level1_func3(int **x, int **y, int **z) {
+  int xLocal, yLocal, zLocal;
+  *x = &xLocal;
+  *y = &yLocal;
+  *z = &zLocal;
+
+  struct StructTy S3;
+  // S3 escapes because z escapes (from top-bottom)
+  S3.x = *z;
+}
+
+void parent_func() {
+  int *x, *y, *z;
+  GPtrPtr = &z;
+  level1_func3(&x, &y, &z);
+
+  struct StructTy S3;
+  // S3 escapes because z escapes (from top-bottom)
+  S3.x = z;
 }
 */
 
@@ -123,14 +145,14 @@ void foo() {
 
 /*
 int *ret_non_escaping_value() {
-  int *x;
-  return x;
+  int x;
+  return &x;
 }
 
 int *ret_escaping_value() {
-  int *y;
-  GPtr = y;
-  return y;
+  int y;
+  GPtr = &y;
+  return &y;
 }
 
 void func() {
@@ -147,18 +169,26 @@ void func() {
 
 /*
 void use_esc_func(int *x, int *y) {
-	// GPtr is escaping, but it's obvious, not print
-	printf("%p", GPtr);
-	// GPtr is escaping, but it's obvious, not print
-	GPtr = GPtr;
-	// x escapes here
-	printf("%p", x);
-	// Alias escapes as an alias of GPtr
-	int *Alias = GPtr + 3;
-	// xAlias escapes as x escapes
-	int *xAlias = x + 3;
-	// yAlias doesn't escape as y doesn't escaps
-	int *yAlias = y + 3;
+  // GPtr is escaping, but it's obvious, not print
+  printf("%p", GPtr);
+  // GPtr is escaping, but it's obvious, not print
+  GPtr = GPtr;
+  // x escapes here
+  printf("%p", x);
+}
+*/
+
+/*
+static void func_with_ptr_arg(int *x, int *y) {
+  int *Alias = x;
+  if (rand())
+    GPtr = Alias;
+  GPtr = y;
+}
+
+void caller() {
+  int x, y;
+  func_with_ptr_arg(&x, &y);
 }
 */
 
@@ -187,47 +217,43 @@ void caller() {
 void func2(int *x, int *y, int *z);
 
 void func1(int *x, int *y, int *z, int *NoEsc) {
-	int *Alias = x;
-	*Alias = 333;
-	if (rand())
-		GPtr = x;
-	printf("%p", y);
-	func2(x, y, z);
+  if (rand())
+    GPtr = x;
+  printf("%p", y);
+  func2(x, y, z);
 }
 
 void func2(int *x, int *y, int *z) {
-	int *NoEsc;
-	if (rand())
-        func1(&x, &y, &z, &NoEsc);
-	printf("%p\n", z);
+  int *NoEsc;
+  if (rand())
+    func1(x, y, z, NoEsc);
+  printf("%p\n", z);
 }
 
 void caller() {
-	int x, y, z, NoEsc;
-	func1(&x, &y, &z, &NoEsc);
+  int x, y, z, NoEsc;
+  func1(&x, &y, &z, &NoEsc);
 }
 */
+
 
 /*
 void alias_of_ptr_arg(int *PtrArg) {
-	int *Alias = PtrArg;
-	printf("%p\n", PtrArg);
+        int *Alias = PtrArg;
+        printf("%p\n", PtrArg);
 }
 */
 
 /*
-void alias_of_ptr_arg_2(int *Arg1, int *Arg2) {
-	int *x = Arg1;
-	int *y;
-	if (rand())
-		GPtr = x;
-    else
-		y = Arg2;
+void escaping_arg(int *Arg1, int *Arg2) {
+  int *x = Arg1;
+  if (rand())
+    GPtr = x;
 }
 
-void alias_of_ptr_arg_2_caller() {
-	int x, y;
-	alias_of_ptr_arg_2(&x, &y);
+void escaping_arg_caller() {
+  int x, y;
+  escaping_arg(&x, &y);
 }
 */
 
@@ -269,19 +295,23 @@ void use_ret_ptr() {
 // Recursive
 //===----------------------------------------------------------------------===//
 
+/*
 // Simple recursive function
-// void rec_func(int *x, int *y, int *z) {
-	// if (rand()) {
-		// int *Alias = y;
-		// *Alias = 333;
-	// }
- // else {
-		// rec_func(x, y, z);
-	// }
-	// int *Alias2 = x;
-	// GPtr = Alias2;
-	// GPtr = y;
-// }
+static void rec_func(int **x, int **y, int **z) {
+  int xLocal;
+  *x = &xLocal;
+
+  if (rand()) {
+    rec_func(x, y, z);
+  }
+  GPtrPtr = x;
+}
+
+void caller() {
+  int *x, *y, *z;
+  rec_func(&x, &y, &z);
+}
+*/
 
 // SCC of 3 mutually functions
 /*
@@ -331,38 +361,34 @@ __attribute_noinline__ void SCC_buz(int *x, int *y, int *z, int *p, int *NoEsc) 
 
 /*
 void level2_func1(int *x) {
-	GPtr = x;											// Escape through GPtr
+  GPtr = x; // Escape through GPtr
 }
 
-void level2_func2(int *x) {
-	*x = 333;
-}
+void level2_func2(int *x) { *x = 333; }
 
-void level1_func1(int *x) {
-	level2_func1(x);
-}
+void level1_func1(int *x) { level2_func1(x); }
 
 void level1_func2(int *x) {
-	*x = 333;
-	int *p = x;
-	printf("%p\n", &p);			// Escape through external func call
+  *x = 333;
+  int *p = x;
+  printf("%p\n", &p); // Escape through external func call
 }
 
 void level1_func3(int *x, int *p) {
-	*x = 42;
-	level2_func2(x);
-	level2_func1(p);
+  *x = 42;
+  level2_func2(x);
+  level2_func1(p);
 }
 
 void external_func(int *x);
 
 void parent_func1() {
-	int x;
-	level1_func1(&x);
-	level1_func2(&x);
-	int y;
-	external_func(&y);
-	int z, p;
-	level1_func3(&z, &p);
+  int x;
+  level1_func1(&x);
+  level1_func2(&x);
+  int y;
+  external_func(&y);
+  int z, p;
+  level1_func3(&z, &p);
 }
 */

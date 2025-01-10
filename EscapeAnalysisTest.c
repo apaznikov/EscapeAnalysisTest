@@ -20,7 +20,12 @@ void *Ptr;
 int GV;
 int GArr[N];
 int **DoubleGPtr;
+int **GPtrPtr;
 void external_func(int* ptr);
+
+// void f() {
+  // puts("hello");
+// }
 
 // void test() {
   // int x;
@@ -142,24 +147,24 @@ void nested_phi() {
 
 /*
 void aliasing_phi() {
-        int x, y;
-        int *p;
-        int *pAlias = NULL;
+  int x, y;
+  int *p;
+  int *pAlias = NULL;
 
-        if (GV) {
-                p = &x;
-        } else {
-                p = &y;
-        }
+  if (GV) {
+    p = &x;
+  } else {
+    p = &y;
+  }
 
-        // p = phi(x, y)
+  // p = phi(x, y)
 
-        // Phi seems to be a pointee in this aliasing
-        // but real pointees are x and y
-        pAlias = p;
+  // Phi seems to be a pointee in this aliasing
+  // but real pointees are x and y
+  pAlias = p;
 
-        func(&pAlias);		// to supress pAlias propagation
-        GPtr = pAlias;
+  func(&pAlias); // to supress pAlias propagation
+  GPtr = pAlias;
 }
 */
 
@@ -216,8 +221,6 @@ void escape_through_const_expr_GEP() {
   // k = &x;
 // }
 
-// int **GPtrPtr;
-
 // void escape_through_gptrptr() {
   // int *x;
   // GPtrPtr = &x;
@@ -225,8 +228,18 @@ void escape_through_const_expr_GEP() {
   // GPtr = &y;
 // }
 
-void no_escape_through_ptr_argument(int *k) {
-}
+// void no_escape_through_ptr_argument(int *k) {
+// }
+
+// void escape_through_gptr() {
+  // int *GPtrAlias;
+  // GPtr = GPtrAlias;
+// }
+
+// void escape_through_gptr2() {
+  // int a;
+  // GPtr = &a;
+// }
 
 // void no_escape_through_gptr() {
   // int *GPtrAlias = GPtr;
@@ -257,36 +270,60 @@ int main() {
 //===----------------------------------------------------------------------===//
 
 /*
-void mutual_aliases_cond() {
-	int x;
-	int *a1, *a2;
-	if (rand()) {
-		a1 = a2;
-		GPtr = a2;
-	} else {
-		a1 = &x;
-		x = 999;
-	}
+// Ptr --> x, Ptr escapes, then x escapes
+void escape_through_escaped_pointer() {
+  int x;
+  int *Ptr = &x;
+  GPtrPtr = &Ptr;
 }
 */
+
+// void assign_pointers() {
+  // int x, y;
+  // int *a1, *a2;
+
+  // a2 = &y;
+  // a1 = a2;
+  // GPtr = a1;
+// }
+
+// void assign_pointers() {
+//   int x, y;
+//   int *a1, *a2;
+//
+//   if (rand()) {
+//     a2 = &y;
+//     a1 = a2;
+//     GPtr = a1;
+//   } else {
+//     a1 = &x;
+//     GPtr = a1;
+//   }
+// }
 
 /*
-void mutual_aliases_loop() {
-        int x;
-        int *a1, *a2;
-        while (rand()) {
-                if (rand()) {
-                        a1 = a2;
-                        GPtr = a2;
-                } else {
-                        a1 = &x;
-                        x = 999;
-                }
-        }
+void assign_pointers_loop() {
+  int x, y, z;
+  int *a1, *a2;
+  while (rand()) {
+    if (rand()) {
+     a2 = &y;
+     a1 = a2;
+     GPtr = a1;
+    } else {
+      a1 = &x;
+      GPtr = a1;
+    }
+
+    if (rand()) {
+      GPtr = &z;
+      return;
+    }
+  }
 }
 */
 
-// void func(int v) {}
+void func(int v);
 
 /*
 int *ret_ptr() {
@@ -427,8 +464,8 @@ void test() {
 }
 */
 
-/*
 // Escape of a structure field
+/*
 StructTy* escape_struct_field() {
   StructTy* s;
   int x;
@@ -456,13 +493,11 @@ void multiple_aliases_via_struct() {
 // Escape via memcpy intrinsic
 //===----------------------------------------------------------------------===//
 
-/*
-void escape_memcpy() {
-	StructTy S1, S2;
-	S2 = S1;
-	GPtr = S2.field;
-}
-*/
+// void escape_memcpy() {
+  // StructTy S1, S2;
+  // S2 = S1;
+  // GPtr = S2.field;
+// }
 
 /*
 // --------- Escape Cases --------
@@ -495,13 +530,11 @@ void escape_func() {
 }
 */
 
-/*
 // Escape by returning pointer
-int *escape_by_returning_ptr() {
-	int *x;
-	return x;
-}
-*/
+// int *escape_by_returning_ptr() {
+  // int *x;
+  // return x;
+// }
 
 /*
 // Escape through aliasing

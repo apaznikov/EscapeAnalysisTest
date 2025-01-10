@@ -43,7 +43,7 @@ function(add_escape_analysis_target target_name source_file
                 COMMAND ${OPT_EXECUTABLE}
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
-#                -passes=mem2reg
+                -passes=mem2reg
                 COMMAND ${OPT_EXECUTABLE}
                 -S -passes='print<${analysis_pass}>'
                 -debug-only=ea
@@ -54,17 +54,17 @@ function(add_escape_analysis_target target_name source_file
 #-passes=mem2reg
 
         # Run TSan
-#        add_custom_command(TARGET ${target_name} POST_BUILD
-#                COMMAND ${CLANG_EXECUTABLE}
-#                -S -emit-llvm -fsanitize=thread
-#                -fno-inline-functions
-#                -mllvm ${tsan_ea_option}
-#                -mllvm -debug-only=tsan
-#                -Wno-return-stack-address
-#                ../${source_file}
-#                -o ${target_name}_TSan_instr.ll
-#                COMMENT "Running TSan"
-#        )
+        add_custom_command(TARGET ${target_name} POST_BUILD
+                COMMAND ${CLANG_EXECUTABLE}
+                -S -emit-llvm -fsanitize=thread
+                -fno-inline-functions
+                -mllvm ${tsan_ea_option}
+                -mllvm -debug-only=tsan
+                -Wno-return-stack-address
+                ../${source_file}
+                -o ${target_name}_TSan_instr.ll
+                COMMENT "Running TSan"
+        )
 endfunction()
 
 add_escape_analysis_target(
@@ -118,13 +118,14 @@ function(add_tsan_target target_name source_file)
                 -fsanitize=thread
                 "SHELL:-mllvm -tsan-use-escape-analysis-global"
                 "SHELL:-mllvm -debug-only=tsan"
+                "SHELL:-mllvm -debug-only=ea"
                 -Wno-unused-command-line-argument
                 -Wno-return-stack-address
                 -Xclang -disable-O0-optnone
         )
 endfunction()
 
-add_tsan_target(TSanTestCPP TSanTest.cpp)
+add_tsan_target(TSanTest TSanTest.cpp)
 add_tsan_target(TSanTestC TSanTest.c)
 
 #-S -passes=mem2reg EscapeAnalysisTest.ll
