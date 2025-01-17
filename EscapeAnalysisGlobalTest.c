@@ -39,7 +39,7 @@ void foo() {
 //===----------------------------------------------------------------------===//
 // New argument strategy for static functions
 //===----------------------------------------------------------------------===//
-
+/*
 struct StructTy { int *x; };
 
 static void level2_func1(int *x) {
@@ -78,16 +78,16 @@ static void level1_func3(int *x, int *y, int *z) {
 void external_func(int *x);
 
 void parent_func() {
-  int x;
-  level1_func1(&x);
-  level1_func2(&x);
+  int p;
+  level1_func1(&p);
+  level1_func2(&p);
 
-  int z;
+  int x, y, z;
   external_func(&z);
 
-  int p, y;
-  level1_func3(&p, &y, &z);
+  level1_func3(&x, &y, &z);
 }
+*/
 
 /*
 static void level1_func3(int **x, int **y, int **z) {
@@ -193,6 +193,19 @@ void caller() {
 */
 
 /*
+// arg x should not escape here in BB entry
+static void func_with_ptr_arg(int *x) {
+  if (rand())
+    GPtr = x;
+}
+
+void caller() {
+  int x;
+  func_with_ptr_arg(&x);
+}
+*/
+
+/*
 void args_are_aliases(int *ArgX, int *ArgY) {
 	int *k;
 	// int *x = k;
@@ -213,17 +226,16 @@ void caller() {
 // SCC 2
 //===----------------------------------------------------------------------===//
 
-/*
-void func2(int *x, int *y, int *z);
+static void func2(int *x, int *y, int *z);
 
-void func1(int *x, int *y, int *z, int *NoEsc) {
+static void func1(int *x, int *y, int *z, int *NoEsc) {
   if (rand())
     GPtr = x;
   printf("%p", y);
   func2(x, y, z);
 }
 
-void func2(int *x, int *y, int *z) {
+static void func2(int *x, int *y, int *z) {
   int *NoEsc;
   if (rand())
     func1(x, y, z, NoEsc);
@@ -234,8 +246,6 @@ void caller() {
   int x, y, z, NoEsc;
   func1(&x, &y, &z, &NoEsc);
 }
-*/
-
 
 /*
 void alias_of_ptr_arg(int *PtrArg) {

@@ -28,6 +28,8 @@ message(STATUS "Found llvm-link: ${LLVM_LINK_EXECUTABLE}")
 
 set(CMAKE_C_LINK_EXECUTABLE
         "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
+set(CMAKE_CXX_LINK_EXECUTABLE
+        "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
 
 function(add_escape_analysis_target target_name source_file
         analysis_pass tsan_ea_option)
@@ -43,7 +45,7 @@ function(add_escape_analysis_target target_name source_file
                 COMMAND ${OPT_EXECUTABLE}
                 -S ${target_name}.ll
                 -o ${target_name}_mem2reg.ll
-                -passes=mem2reg
+#                -passes=mem2reg
                 COMMAND ${OPT_EXECUTABLE}
                 -S -passes='print<${analysis_pass}>'
                 -debug-only=ea
@@ -54,17 +56,17 @@ function(add_escape_analysis_target target_name source_file
 #-passes=mem2reg
 
         # Run TSan
-        add_custom_command(TARGET ${target_name} POST_BUILD
-                COMMAND ${CLANG_EXECUTABLE}
-                -S -emit-llvm -fsanitize=thread
-                -fno-inline-functions
-                -mllvm ${tsan_ea_option}
-                -mllvm -debug-only=tsan
-                -Wno-return-stack-address
-                ../${source_file}
-                -o ${target_name}_TSan_instr.ll
-                COMMENT "Running TSan"
-        )
+#        add_custom_command(TARGET ${target_name} POST_BUILD
+#                COMMAND ${CLANG_EXECUTABLE}
+#                -S -emit-llvm -fsanitize=thread
+#                -fno-inline-functions
+#                -mllvm ${tsan_ea_option}
+#                -mllvm -debug-only=tsan
+#                -Wno-return-stack-address
+#                ../${source_file}
+#                -o ${target_name}_TSan_instr.ll
+#                COMMENT "Running TSan"
+#        )
 endfunction()
 
 add_escape_analysis_target(
@@ -80,8 +82,6 @@ add_escape_analysis_target(
 #
 #set_target_properties(TSanTest PROPERTIES CXX_COMPILER ${CLANG_CXX_EXECUTABLE})
 #
-#set(CMAKE_CXX_LINK_EXECUTABLE
-#        "${LLVM_LINK_EXECUTABLE} <LINK_FLAGS> -S <OBJECTS> -o <TARGET>.ll <LINK_LIBRARIES>")
 #
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mllvm -debug-only=tsan -mllvm -debug-only=ea")
 #
@@ -114,7 +114,7 @@ function(add_tsan_target target_name source_file)
         target_compile_options(${target_name} PRIVATE
                 -O0
                 -S -emit-llvm
-                -o ${target_name}_instr.ll  # Имя выходного файла на основе имени цели
+                -o ${target_name}_instr.ll
                 -fsanitize=thread
                 "SHELL:-mllvm -tsan-use-escape-analysis-global"
                 "SHELL:-mllvm -debug-only=tsan"
@@ -125,7 +125,7 @@ function(add_tsan_target target_name source_file)
         )
 endfunction()
 
-add_tsan_target(TSanTest TSanTest.cpp)
+add_tsan_target(TSanTestCPP TSanTest.cpp)
 add_tsan_target(TSanTestC TSanTest.c)
 
 #-S -passes=mem2reg EscapeAnalysisTest.ll
