@@ -6,12 +6,14 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 
+#if 0
 int pipes[1];
 static void handler(int sig) {
   write(pipes[0], "x", 1);
@@ -74,29 +76,29 @@ int main() {
   fprintf(stderr, "DONE\n");
   return -1;
 }
+#endif
 
-
-/*
 int *GPtr;
 
 // int *mem;
 
-void func() {
-  int *mem = malloc(100);
-  // GPtr = mem;
-  memset(mem, 0, 100);
-  // int *mem2 = malloc(100);
-  memcpy(mem, "hello", 5);
-  memmove(mem, "world", 5);
+// __attribute__((no_sanitize_thread))
+// void my_memset(void *dst, int val, size_t count) {
+// }
 
-  // mem[33] = 444;
+int main() {
+  char str[100];
 
-  // int x;
-  // GPtr = &x;
-  // int *alias = &x;
-  // *alias = 555;
+  // memset(str, 0, 100);
+  // memcpy(str, "sample text for testing", 23);
+  // memmove(str, "world", 5);
+
+  char *substr = memchr(str, 'i', 100);
+  int len = strlen(str);
+  int res = strcmp(str, "world");
+
+  return 0;
 }
-*/
 
 /*
 void func_to_instr() {
