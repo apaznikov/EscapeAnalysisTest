@@ -117,7 +117,6 @@ function(add_tsan_target target_name source_file)
                 -o ${target_name}_instr.ll
                 -fsanitize=thread
                 "SHELL:-mllvm -tsan-use-escape-analysis-global"
-                "SHELL:-mllvm -debug-only=tsan"
                 "SHELL:-mllvm -debug-only=ea"
                 -Wno-unused-command-line-argument
                 -Wno-return-stack-address
@@ -125,6 +124,7 @@ function(add_tsan_target target_name source_file)
         )
 endfunction()
 
+#"SHELL:-mllvm -debug-only=tsan,tsan-ea,ea"
 add_tsan_target(TSanTestCPP TSanTest.cpp)
 add_tsan_target(TSanTestC TSanTest.c)
 

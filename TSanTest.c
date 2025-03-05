@@ -10,6 +10,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 
@@ -78,6 +79,7 @@ int main() {
 }
 #endif
 
+
 int *GPtr;
 
 // int *mem;
@@ -85,7 +87,52 @@ int *GPtr;
 // __attribute__((no_sanitize_thread))
 // void my_memset(void *dst, int val, size_t count) {
 // }
+int GV = 0;
 
+static void *racer(void *p) {
+  *(int*)p = 42;
+  // *p = 42;
+  return 0;
+}
+
+int main() {
+  int x;
+  // pthread_t th1, th2;
+  pthread_t th1;
+  pthread_create(&th1, 0, racer, &x);
+  // pthread_create(&th2, 0, racer, &x);
+  // pthread_join(th1, 0);
+  // pthread_join(th2, 0);
+  return 0;
+}
+
+/*
+int main() {
+  switch (fork()) {
+  default:  // parent
+    while (wait(0) < 0) {}
+    break;
+  case 0:  // child
+  {
+    int x = 0;
+    pthread_t th1, th2;
+    pthread_create(&th1, 0, racer, &x);
+    pthread_create(&th2, 0, racer, &x);
+    pthread_join(th1, 0);
+    pthread_join(th2, 0);
+    exit(0);
+    break;
+  }
+  case -1:  // error
+    fprintf(stderr, "failed to fork (%d)\n", errno);
+    exit(1);
+  }
+  fprintf(stderr, "OK\n");
+}
+*/
+
+
+/*
 int main() {
   char str[100];
 
@@ -93,12 +140,15 @@ int main() {
   // memcpy(str, "sample text for testing", 23);
   // memmove(str, "world", 5);
 
+  GV = 44;
+
   char *substr = memchr(str, 'i', 100);
   int len = strlen(str);
   int res = strcmp(str, "world");
 
   return 0;
 }
+*/
 
 /*
 void func_to_instr() {
