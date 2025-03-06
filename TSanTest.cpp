@@ -1,3 +1,4 @@
+#include <atomic>
 #include <errno.h>
 #include <limits.h>
 #include <pthread.h>
@@ -9,6 +10,21 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+std::atomic<int *> AtomicVar;
+
+int GV;
+
+void external_func(int *ptr);
+
+void CAS() {
+  // int *expected = &GV;
+  int *expected;
+  // external_func(expected);
+  AtomicVar.compare_exchange_weak(expected, nullptr);
+  *expected = 777;
+}
+
+#if 0
 // This attempts to exercise a race condition where both a thread and its signal
 // handler allocate the SigCtx. If the race is allowed, it leads to a leak and
 // the first signal being dropped.
@@ -75,6 +91,7 @@ int main() {
   fprintf(stderr, "DONE\n");
   return 0;
 }
+#endif
 
 
 #if 0

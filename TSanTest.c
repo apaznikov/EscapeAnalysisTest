@@ -81,6 +81,19 @@ int main() {
 
 
 int *GPtr;
+int GV;
+
+void external_func(int **ptr);
+
+void func() {
+  // int *expected = &GV;
+  int *expected;
+  external_func(&expected);
+  // AtomicVar.compare_exchange_weak(expected, nullptr);
+  *expected = 777;
+}
+
+#if 0
 
 // int *mem;
 
@@ -105,6 +118,7 @@ int main() {
   // pthread_join(th2, 0);
   return 0;
 }
+#endif
 
 /*
 int main() {
