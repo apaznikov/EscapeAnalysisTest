@@ -10,10 +10,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-std::atomic<int *> AtomicVar;
-
 int GV;
+std::atomic<int*> global_p;
 
+void WriteToMemory() {
+  global_p[0] = 777;
+}
+
+#if 0
 void external_func(int *ptr);
 
 void CAS() {
@@ -23,6 +27,7 @@ void CAS() {
   AtomicVar.compare_exchange_weak(expected, nullptr);
   *expected = 777;
 }
+#endif
 
 #if 0
 // This attempts to exercise a race condition where both a thread and its signal

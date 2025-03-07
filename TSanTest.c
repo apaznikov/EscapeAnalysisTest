@@ -83,6 +83,8 @@ int main() {
 int *GPtr;
 int GV;
 
+
+#if 0
 void external_func(int **ptr);
 
 void func() {
@@ -92,6 +94,7 @@ void func() {
   // AtomicVar.compare_exchange_weak(expected, nullptr);
   *expected = 777;
 }
+#endif
 
 #if 0
 

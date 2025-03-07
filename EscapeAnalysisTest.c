@@ -23,6 +23,12 @@ int **DoubleGPtr;
 int **GPtrPtr;
 void external_func(int* ptr);
 
+int *foo() {
+  int *x;
+  int **p = &x;
+  return *p;
+}
+
 // void f() {
   // puts("hello");
 // }
