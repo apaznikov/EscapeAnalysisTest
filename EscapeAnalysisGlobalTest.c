@@ -8,7 +8,65 @@
 int* GPtr;
 int **GPtrPtr;
 
-// struct StructTy { int x, y; };
+struct NestedS { int a, b, c; };
+struct StructTy {
+  int x, y, z;
+  struct NestedS nested;
+  struct NestedS nestedArr[10];
+};
+
+// void alias_of_ptr_arg(int *PtrArg) {
+  // int *Alias = PtrArg;
+  // *Alias = 333;
+// }
+
+//===----------------------------------------------------------------------===//
+// Test passes
+//===----------------------------------------------------------------------===//
+
+void path() {
+  struct StructTy S;
+  S.z = 111;
+  S.nested.a = 222;
+  S.nestedArr[5].a = 333;
+
+  struct StructTy *SPtr;
+  SPtr->z = 444;
+  SPtr->nested.a = 555;
+}
+
+//===----------------------------------------------------------------------===//
+// Escaping pointer
+//===----------------------------------------------------------------------===//
+
+/*
+void external_func(int *ptr);
+
+void escaping_ptr() {
+  int *x;
+  external_func(x);
+  *x = 777;
+}
+*/
+
+//===----------------------------------------------------------------------===//
+// Passing function pointer to other function
+//===----------------------------------------------------------------------===//
+
+/*
+static void *thread(void *p) {
+  *(int*)p = 42;
+  return 0;
+}
+
+int main() {
+  int x;
+  pthread_t thr;
+  pthread_create(&thr, 0, thread, &x);
+  pthread_join(thr, 0);
+  return 0;
+}
+*/
 
 //===----------------------------------------------------------------------===//
 // Check pointer strategies
@@ -226,6 +284,7 @@ void caller() {
 // SCC 2
 //===----------------------------------------------------------------------===//
 
+/*
 static void func2(int *x, int *y, int *z);
 
 static void func1(int *x, int *y, int *z, int *NoEsc) {
@@ -246,6 +305,7 @@ void caller() {
   int x, y, z, NoEsc;
   func1(&x, &y, &z, &NoEsc);
 }
+*/
 
 /*
 void alias_of_ptr_arg(int *PtrArg) {

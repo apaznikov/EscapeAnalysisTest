@@ -23,11 +23,11 @@ int **DoubleGPtr;
 int **GPtrPtr;
 void external_func(int* ptr);
 
-int *foo() {
-  int *x;
-  int **p = &x;
-  return *p;
-}
+// int *foo() {
+  // int *x;
+  // int **p = &x;
+  // return *p;
+// }
 
 // void f() {
   // puts("hello");
@@ -537,10 +537,10 @@ void escape_func() {
 */
 
 // Escape by returning pointer
-// int *escape_by_returning_ptr() {
-  // int *x;
-  // return x;
-// }
+int *escape_by_returning_ptr() {
+  int *x;
+  return x;
+}
 
 /*
 // Escape through aliasing

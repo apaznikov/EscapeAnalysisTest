@@ -13,6 +13,46 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+void ext_func(int *a1);
+int *GPtr;
+int GV;
+
+// static __attribute_noinline__ int *func(int *x) {
+  // int *Alias = x + 1;
+  // GPtr = Alias;
+  // return Alias;
+// }
+
+// int *caller() {
+  // int *a = malloc(sizeof(int));
+  // int *p = func(a);
+  // return p;
+// }
+
+// void alias_of_ptr_arg(int *PtrArg) {
+  // int *Alias = PtrArg;
+  // *Alias = 333;
+// }
+
+/*
+// Escape by returning pointer
+int *escape_by_returning_ptr() {
+  int *x;
+  *x = 333;
+  return NULL;
+}
+*/
+
+/*
+int test() {
+  // int a1[10], a2[10];
+  int *a1, *a2;
+  // int rc = bcmp(a1, a2, 10);
+  ext_func(a1);
+  a1[3] = 333;
+  // return rc;
+}
+*/
 
 #if 0
 int pipes[1];
@@ -80,8 +120,6 @@ int main() {
 #endif
 
 
-int *GPtr;
-int GV;
 
 
 #if 0
@@ -93,33 +131,6 @@ void func() {
   external_func(&expected);
   // AtomicVar.compare_exchange_weak(expected, nullptr);
   *expected = 777;
-}
-#endif
-
-#if 0
-
-// int *mem;
-
-// __attribute__((no_sanitize_thread))
-// void my_memset(void *dst, int val, size_t count) {
-// }
-int GV = 0;
-
-static void *racer(void *p) {
-  *(int*)p = 42;
-  // *p = 42;
-  return 0;
-}
-
-int main() {
-  int x;
-  // pthread_t th1, th2;
-  pthread_t th1;
-  pthread_create(&th1, 0, racer, &x);
-  // pthread_create(&th2, 0, racer, &x);
-  // pthread_join(th1, 0);
-  // pthread_join(th2, 0);
-  return 0;
 }
 #endif
 

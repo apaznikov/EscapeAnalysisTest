@@ -112,7 +112,7 @@ function(add_tsan_target target_name source_file)
         set_target_properties(${target_name} PROPERTIES COMPILER ${compiler})
 
         target_compile_options(${target_name} PRIVATE
-                -O0
+                -O1
                 -S -emit-llvm
                 -o ${target_name}_instr.ll
                 -fsanitize=thread
